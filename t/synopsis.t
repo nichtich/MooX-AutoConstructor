@@ -2,26 +2,26 @@ use Test::More;
 
 {
     package Person;
-	use Moo;
-	use v5.10;
+    use Moo;
+    use v5.10;
 
-	has given   => (is => 'rw');
-	has surname => (is => 'rw');
+    has given   => (is => 'rw');
+    has surname => (is => 'rw');
 
     sub BUILDARGS {
-		shift;
-		return { } unless @_;
+        shift;
+        return { } unless @_;
 
-		# Person->new( $given )
-	    return { given => $_[0] } if @_ == 1;
+        # Person->new( $given )
+        return { given => $_[0] } if @_ == 1;
 
-		# Person->new( $surname, $given )
-	    return { given => $_[1], surname => $_[0] } 
-			if @_ == 2 and !($_[0] ~~ [qw(given surname)]);
+        # Person->new( $surname, $given )
+        return { given => $_[1], surname => $_[0] } 
+            if @_ == 2 and !($_[0] ~~ [qw(given surname)]);
 
-		# Person->new( given => $given, surname => $surname )
-		return { @_ };
-	}
+        # Person->new( given => $given, surname => $surname )
+        return { @_ };
+    }
 }
 
 diag('Person');
@@ -44,20 +44,20 @@ is $dave->surname, 'Smith';
 
 {
     package Artifact;
-	use Moo;
-	use MooX::AutoConstructor;
-	use Scalar::Util qw(blessed);
+    use Moo;
+    use MooX::AutoConstructor;
+    use Scalar::Util qw(blessed);
 
-	has creator => (
-		is => 'rw',
-		coerce => sub { # this only works for a single argument
-			(blessed $_[0] and $_[0]->isa('Person')) ? 
-				$_[0] : Person->new( $_[0] );
-		}
-	);
+    has creator => (
+        is => 'rw',
+        coerce => sub { # this only works for a single argument
+            (blessed $_[0] and $_[0]->isa('Person')) ? 
+                $_[0] : Person->new( $_[0] );
+        }
+    );
 
-	autoconstructor
-	    creator => 'Person';
+    autoconstructor
+        creator => 'Person';
 }
 
 diag('Artifact');
